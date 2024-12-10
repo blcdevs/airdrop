@@ -91,11 +91,11 @@ const Header = () => {
                         </li>
                       )}
 
-                      <li class="offcanvas-menu">
+                      {/* <li class="offcanvas-menu">
                         <a class="menu-tigger">
                           <RiMenu3Line />
                         </a>
-                      </li>
+                      </li> */}
                     </ul>
                   </div>
                   <div class="mobile-nav-toggler">
@@ -189,7 +189,7 @@ const Header = () => {
         </div>
       </div>
 
-      <div class="extra-info">
+      {/* <div class="extra-info">
         <div class="close-icon menu-close">
           <button>
             <i class="fas ">
@@ -243,7 +243,8 @@ const Header = () => {
             </i>
           </a>
         </div>
-      </div>
+      </div> */}
+
       <div class="offcanvas-overly"></div>
     </header>
   );
