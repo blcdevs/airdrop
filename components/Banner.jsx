@@ -1,6 +1,6 @@
 import React from "react";
 import { FaUser, FaShareAlt } from "react-icons/fa";  // Add FaShareAlt here
-
+import AddTokenButton from "../components/AddTokenButton"; 
 
 const Banner = ({ title, type, action, path }) => {
 
@@ -47,9 +47,9 @@ const Banner = ({ title, type, action, path }) => {
               {/* New Airdrop Summary Section */}
               <div className="airdrop-summary mt-4 bg-[#20212e] p-4 rounded-lg">
               <p className="text-white text-sm">
-  Claiming your TNTC tokens is simple! Connect your MetaMask wallet, 
-  <span className="block my-2">
-    <span>Share </span>
+  Claiming your TNTC tokens is simple! Connect your MetaMask wallet, &nbsp;
+   <span className="block my-2">
+      <span>Share </span>
     <FaShareAlt
       className="new-cursour inline-block ml-2 text-[#0cfd95] hover:text-[#00ff87] transition-colors duration-300 transform hover:scale-110 cursor-pointer"
       onClick={() => shareContent('twitter')}
@@ -71,6 +71,9 @@ const Banner = ({ title, type, action, path }) => {
                   <div className="stat text-center">
                     <span className="block text-[#17fba2] font-bold text-lg">Dec 2024</span>
                     <span className="block text-white text-xs">Distribution</span>
+                  </div>
+                  <div className="stat text-center">
+                  <AddTokenButton />
                   </div>
                 </div>
               </div>

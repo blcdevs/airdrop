@@ -183,3 +183,39 @@ export const getBalance = async () => {
     console.log(error);
   }
 };
+
+
+export const addTNTCTokenToMetaMask = async () => {
+  if (window.ethereum) {
+    const tokenAddress = "0x83B54268CB2FCafc2C982f946224cfe398993CbF"; // TNTC contract address
+    const tokenSymbol = "TNTC"; // Symbol for your token
+    const tokenDecimals = 18; // Decimals for TNTC token (adjust if needed)
+    const tokenImage = "https://tntc.netlify.app/assets/img/logo/logo.png"; // Replace with actual image URL
+
+    try {
+      const wasAdded = await window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20",
+          options: {
+            address: tokenAddress,
+            symbol: tokenSymbol,
+            decimals: tokenDecimals,
+            image: tokenImage,
+          },
+        },
+      });
+
+      if (wasAdded) {
+        return "Token added!";
+      } else {
+        return "Token not added";
+      }
+    } catch (error) {
+      console.error(error);
+      return "Failed to add token";
+    }
+  } else {
+    return "MetaMask is not installed";
+  }
+};

@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import AddTokenButton from "../components/AddTokenButton"; 
 
 const Hero = () => {
   return (
@@ -30,9 +31,11 @@ const Hero = () => {
               <Link href="/airdrop" class="btn">
                 Get Airdrop Token
               </Link>
-              <Link href="/airdrop" class="btn btn-two">
+              {/* <Link href="/airdrop" class="btn btn-two">
                 Read White Paper
-              </Link>
+              </Link> */}
+          <AddTokenButton />
+
             </div>
 
           </div>
