@@ -380,8 +380,8 @@ contract Airdrop is Ownable {
         address useraddress;
         string name;
         string twitterId;
-        string linkedInUrl;
-        string instagramUrl;
+        // string linkedInUrl;
+        // string instagramUrl;
         string email;
         uint256 timestamp;
     }
@@ -395,14 +395,14 @@ contract Airdrop is Ownable {
       _airdropAmount = airdropAmount;
     }
 
-    function dropTokens(string memory _name, string memory _twitterId, string memory _linkedInUrl, string memory _instagramUrl, string memory _email) public payable returns (bool) {
+    function dropTokens(string memory _name, string memory _twitterId, string memory _email) public payable returns (bool) {
 
         require(msg.value >= _fee, "Not enough cash");
         require(Token(_tokenContract).balanceOf(msg.sender) < _airdropAmount);
         require(Token(_tokenContract).transfer(msg.sender, _airdropAmount));
         
         uint256 airdropId = totalAirdrops++;
-        airdropInfos[airdropId] = AirdropInfo(airdropId, msg.sender, _name,_twitterId,_linkedInUrl,_instagramUrl,_email, block.timestamp);
+        airdropInfos[airdropId] = AirdropInfo(airdropId, msg.sender, _name,_twitterId,_email, block.timestamp);
        
 
         return true;

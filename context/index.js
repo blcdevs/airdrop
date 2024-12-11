@@ -125,8 +125,8 @@ export const CONTEXT_Provider = ({ children }) => {
           useraddress: user[1],
           name: user[2],
           twitterId: user[3],
-          linkedInUrl: user[4],
-          instagramUrl: user[5],
+          // linkedInUrl: user[4],
+          // instagramUrl: user[5],
           email: user[6],
           timestamp: new Date(user[7].toNumber() * 1000).toDateString(),
         }));
@@ -170,7 +170,7 @@ export const CONTEXT_Provider = ({ children }) => {
     try {
       setLoader(true);
       //DATA
-      const { name, twitterId, linkedInUrl, instagramUrl, email } = user;
+      const { name, twitterId, email } = user;
       //GET USER ACCOUNT
       const account = await checkIfWalletConnected();
       const PROVIDER = await web3Provider();
@@ -182,8 +182,8 @@ export const CONTEXT_Provider = ({ children }) => {
       const claim = await AIRDROP_CONTRACT.connect(signer).dropTokens(
         name,
         twitterId,
-        linkedInUrl,
-        instagramUrl,
+        // linkedInUrl,
+        // instagramUrl,
         email,
         {
           value: feeCharge.toString(),
@@ -372,8 +372,8 @@ export const CONTEXT_Provider = ({ children }) => {
         useraddress: transaction[1],
         name: transaction[2],
         twitterId: transaction[3],
-        linkedInUrl: transaction[4],
-        instagramUrl: transaction[5],
+        // linkedInUrl: transaction[4],
+        // instagramUrl: transaction[5],
         email: transaction[6],
         timestamp: new Date(transaction[7].toNumber() * 1000).toDateString(),
       };
