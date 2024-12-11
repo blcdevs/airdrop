@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -16,12 +17,24 @@ const Hero = () => {
               </h2>
               <p>
                 Join the blockchain revolution with Tinseltoken, a community-driven 
-                digital asset designed to democratize cryptocurrency. 
+                digital asset designed to democratize cryptocurrency.                  
+              </p>
 
-                Tinseltoken (TNTC) is offering a massive airdrop of 140 million tokens (70% of total supply). Distribute in December 2024, this airdrop aims to democratize blockchain access and foster global community engagement. Claim your free TNTC tokens through our simple 3-step process!
-                 
+              <p>
+              Tinseltoken (TNTC) is offering a massive airdrop of 140 million tokens (70% of total supply). Distribute in December 2024, this airdrop aims to democratize blockchain access and foster global community engagement. Claim your free TNTC tokens through our simple 3-step process!
+
               </p>
             </div>
+
+            <div class="contribution-btn">
+              <Link href="/airdrop" class="btn">
+                Get Airdrop Token
+              </Link>
+              <Link href="/airdrop" class="btn btn-two">
+                Read White Paper
+              </Link>
+            </div>
+
           </div>
         </div>
       </div>
