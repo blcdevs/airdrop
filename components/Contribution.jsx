@@ -9,7 +9,7 @@ const Contribution = () => {
           <div class="col-lg-10">
             <div class="contribution-title">
               <h2 class="title">
-                <span>$45,432</span> Raised
+                <span>$85,432</span> Raised
               </h2>
             </div>
             <div class="progress-wrap">
