@@ -16,10 +16,10 @@ const Hero = () => {
               </h2>
               <p>
                 Join the blockchain revolution with Tinseltoken, a community-driven 
-                digital asset designed to democratize cryptocurrency. Experience 
-                our live ICO and be part of a transformative ecosystem that 
-                allocates 70% of tokens to community airdrops, empowering users 
-                through DeFi, gaming, and governance innovations.
+                digital asset designed to democratize cryptocurrency. 
+
+                Tinseltoken (TNTC) is offering a massive airdrop of 140 million tokens (70% of total supply). Distribute in December 2024, this airdrop aims to democratize blockchain access and foster global community engagement. Claim your free TNTC tokens through our simple 3-step process!
+                 
               </p>
             </div>
           </div>
