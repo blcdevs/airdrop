@@ -109,7 +109,7 @@ const Admin = () => {
                   <h6 class="title">Airdrop Amount </h6>
                   <AdminInput
                     name={"Airdrop Claim Amount"}
-                    placeholder={`${airdropPerUser || 0} Matic`}
+                    placeholder={`${airdropPerUser || 0} TNTC`}
                     handleClick={(e) => setAirdropamount(e.target.value)}
                   />
                   <button
@@ -133,7 +133,7 @@ const Admin = () => {
                   <h6 class="title">Airdrop Fee </h6>
                   <AdminInput
                     name={"Airdrop Charge"}
-                    placeholder={`${airdropFee || 0} Matic`}
+                    placeholder={`${airdropFee || 0} BNB`}
                     handleClick={(e) => setFee(e.target.value)}
                   />
                   <button
@@ -157,7 +157,7 @@ const Admin = () => {
                   <h6 class="title">Withdraw Ether </h6>
                   <AdminInput
                     name={"Receiving Address"}
-                    placeholder={`${contractBalEther || 0} Matic`}
+                    placeholder={`${contractBalEther || 0} BNB`}
                     handleClick={(e) => setWithdrawEther(e.target.value)}
                   />
                   <button
