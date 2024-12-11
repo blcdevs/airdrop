@@ -6,11 +6,11 @@ import Web3Modal from "web3modal";
 import airdrop from "./airdrop.json";
 import iphone from "./iphone.json";
 
-export const airdrop_ADDRESS = "0x68B091Ab8F160d7111b96ddbD63234Ec52d6c27b";
+export const airdrop_ADDRESS = "0xd5f278DAEECc7833bbd6531a52ea76Cc3f968037";
 const airdrop_ABI = airdrop.abi;
 
 //IPHONE
-export const iphone_ADDRESS = "0x6894a7bD90830E83419d2234321126cB00565c56";
+export const iphone_ADDRESS = "0x83B54268CB2FCafc2C982f946224cfe398993CbF";
 const iphone_ABI = iphone.abi;
 
 const fetchContract = (signer, ABI, ADDRESS) =>
@@ -129,7 +129,7 @@ const changeNetwork = async ({ networkName }) => {
 };
 
 export const handleNetworkSwitch = async () => {
-  const networkName = "bsc_testnet";
+  const networkName = "bsc";
   await changeNetwork({ networkName });
 };
 
