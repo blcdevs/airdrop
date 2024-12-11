@@ -1,6 +1,28 @@
 import React from "react";
+import { FaUser, FaShareAlt } from "react-icons/fa";  // Add FaShareAlt here
+
 
 const Banner = ({ title, type, action, path }) => {
+
+    // Function to share on social media
+    const shareContent = (platform) => {
+      const shareText = "🚀 Join the revolution! Introducing @tinseltoken, the future of decentralized finance and social impact. 💡 With every transaction, you're not just investing in a token, you're investing in positive change. 🌍 Let's empower communities, support sustainability, and drive meaningful impact together. Don't miss out on this opportunity to be part of something bigger than yourself. Invest in Tinseltoken today and make a difference while earning rewards! #@tinseltoken #crypto #tinseltoken #dapp 🌟🔗";
+      const websiteUrl = "https://www.tinseltoken.com/";
+  
+      switch (platform) {
+        case 'twitter':
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(websiteUrl)}`, '_blank');
+          break;
+        case 'instagram':
+          // Instagram doesn't allow direct sharing via web, so we'll open their website
+          window.open(`https://www.instagram.com/`, '_blank');
+          break;
+        default:
+          break;
+      }
+    };
+
+
   return (
     <section 
       className="breadcrumb-area breadcrumb-bg" 
@@ -24,11 +46,19 @@ const Banner = ({ title, type, action, path }) => {
               
               {/* New Airdrop Summary Section */}
               <div className="airdrop-summary mt-4 bg-[#20212e] p-4 rounded-lg">
-                <p className="text-white text-sm">
-                Claiming your TNTC tokens is simple! Connect your MetaMask wallet, share the post about Tinseltoken below to X, copy your post ID, 
-                and fill out name and email form. Complete these 3 easy steps to participate in our massive 140 million token airdrop and be part 
-                of the Tinseltoken revolution!
-                </p>
+              <p className="text-white text-sm">
+  Claiming your TNTC tokens is simple! Connect your MetaMask wallet, 
+  <span className="block my-2">
+    <span>Share </span>
+    <FaShareAlt
+      className="new-cursour inline-block ml-2 text-[#0cfd95] hover:text-[#00ff87] transition-colors duration-300 transform hover:scale-110 cursor-pointer"
+      onClick={() => shareContent('twitter')}
+      size={24}
+    />
+    <span className="block text-xs text-gray-400 mt-1"> Click to share and spread the word! </span>
+  </span>
+   Copy your post ID, and fill out name and email form. Complete these 3 easy steps to participate in our massive 140 million token airdrop and be part of the Tinseltoken revolution!
+</p>
                 <div className="airdrop-stats flex justify-between mt-3">
                   <div className="stat text-center">
                     <span className="block text-[#00ff87] font-bold text-lg">140M</span>
