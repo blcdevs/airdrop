@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { ethers, Contract } from "ethers";
-import Web3Modal from "web3modal";
 import toast from "react-hot-toast";
-import { promisify } from "util";
+import { useAccount, useDisconnect, useConnect } from 'wagmi';
+import { parseErrorMsg } from "../Utils/index";
 
 //INTERNAL IMPORT
 import {
@@ -14,7 +14,6 @@ import {
   web3Provider,
   handleNetworkSwitch,
 } from "./constants";
-import { parseErrorMsg } from "../Utils/index";
 
 export const CONTEXT = React.createContext();
 
@@ -33,21 +32,34 @@ export const CONTEXT_Provider = ({ children }) => {
   const [connectedTokenAddr, setConnectedTokenAddr] = useState();
   const [count, setCount] = useState(0);
 
+  // Wagmi hooks
+  const { address: wagmiAddress, isConnected } = useAccount();
+  const { disconnectAsync } = useDisconnect();
+  const { connectAsync, connectors } = useConnect();
+
   //NOTIFICATION
   const notifyError = (msg) => toast.error(msg, { duration: 4000 });
   const notifySuccess = (msg) => toast.success(msg, { duration: 4000 });
 
-  //CONNECT WALLET
-  const connect = async () => {
+   //CONNECT WALLET
+   const connect = async () => {
     try {
-      if (!window.ethereum) return notifyError("Install MetaMask");
+      // First, check network
       await handleNetworkSwitch();
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
+
+      // If already connected via Wagmi, return
+      if (isConnected) {
+        setAddress(wagmiAddress);
+        return;
+      }
+
+      // Try to connect with the first available connector
+      const result = await connectAsync({ 
+        connector: connectors[0],
       });
 
-      if (accounts.length) {
-        setAddress(accounts[0]);
+      if (result.account) {
+        setAddress(result.account);
       } else {
         notifyError("Sorry, you have No account");
       }
@@ -58,18 +70,15 @@ export const CONTEXT_Provider = ({ children }) => {
     }
   };
 
-  //CHECH IF WALLET CONNECTED
-  const checkIfWalletConnected = async () => {
+   //CHECH IF WALLET CONNECTED
+   const checkIfWalletConnected = async () => {
     try {
-      if (!window.ethereum) return notifyError("Install MetaMask");
-      await handleNetworkSwitch();
-      const accounts = await window.ethereum.request({
-        method: "eth_accounts",
-      });
-
-      return accounts[0];
+      if (isConnected && wagmiAddress) {
+        return wagmiAddress;
+      }
+      return null;
     } catch (error) {
-      notifyError("Someting went wrong");
+      notifyError("Something went wrong");
       console.log(error);
     }
   };
@@ -162,9 +171,27 @@ export const CONTEXT_Provider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    fetchInitialData();
-  }, [address, count]);
+ // Effect to update address when Wagmi connection changes
+ useEffect(() => {
+  if (isConnected && wagmiAddress) {
+    setAddress(wagmiAddress);
+  } else {
+    setAddress("");
+  }
+}, [isConnected, wagmiAddress]);
+
+const disconnect = async () => {
+  try {
+    await disconnectAsync();
+    setAddress("");
+  } catch (error) {
+    console.error("Disconnection error", error);
+  }
+};
+
+useEffect(() => {
+  fetchInitialData();
+}, [address, count]);
 
   const claimAirdrop = async (user) => {
     try {
@@ -428,6 +455,7 @@ export const CONTEXT_Provider = ({ children }) => {
     <CONTEXT.Provider
       value={{
         connect,
+        disconnect,
         notifyError,
         notifySuccess,
         claimAirdrop,

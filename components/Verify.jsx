@@ -8,6 +8,7 @@ import { MdMarkEmailRead } from "react-icons/md";
 //INTERNAL IMPORT
 import { Twitter, Follow } from "./index";
 import { CONTEXT } from "../context/index";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Verify = () => {
   const handleImage = () => {
@@ -128,12 +129,15 @@ const Verify = () => {
                       {loader ? "loading..." : "Clain  Airdrop"}
                     </button>
                   ) : (
-                    <button
-                      onClick={() => connect()}
-                      className="btn margin-btn-new"
-                    >
-                      Connect Wallet
-                    </button>
+                    <ConnectButton 
+                      label="Connect Wallet"
+                      chainStatus="icon"
+                      showBalance={true}
+                      accountStatus={{
+                        smallScreen: 'avatar',
+                        largeScreen: 'full'
+                      }}
+                    />
                   )}
                 </div>
               </div>

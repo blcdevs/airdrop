@@ -10,6 +10,7 @@ import {
   TiSocialFacebook,
   TiSocialGithub,
 } from "react-icons/ti";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 //INTERNAL IMPORT
 import { CONTEXT } from "../context/index";
@@ -71,23 +72,18 @@ const Header = () => {
                   </div>
                   <div class="header-action">
                     <ul class="list-wrap">
-                      {address ? (
-                        <li class="header-login">
+                    {address ? (
+                        <li className="header-login">
                           <Link href="/airdrop">
                             {loader ? "loading..." : " Airdrop"}
-                            <i class="fas ">
+                            <i className="fas">
                               <MdOutlineGeneratingTokens />
                             </i>
                           </Link>
                         </li>
                       ) : (
-                        <li class="header-login">
-                          <a onClick={() => connect()}>
-                            Connect
-                            <i class="fas ">
-                              <MdOutlineGeneratingTokens />
-                            </i>
-                          </a>
+                        <li className="header-login">
+                          <ConnectButton />
                         </li>
                       )}
 
@@ -137,7 +133,15 @@ const Header = () => {
                         </li>
                       ) : (
                         <li class="header-login">
-                          <a onClick={() => connect()}>Connect</a>
+                          <ConnectButton 
+              label="Connect Wallet"
+              chainStatus="icon"
+              showBalance={true}  // This will show the wallet balance
+              accountStatus={{
+                smallScreen: 'avatar',
+                largeScreen: 'full'
+              }}  // Configures how the account info is displayed
+            />
                         </li>
                       )}
                     </ul>

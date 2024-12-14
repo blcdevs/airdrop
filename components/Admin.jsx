@@ -9,7 +9,7 @@ import { shortenAddress } from "../Utils/index";
 const Admin = () => {
   const handleImage = () => {
     let url = `airdrop.png`;
-    saveAs(url, `@theblockchaincoders`);
+    saveAs(url, `@thetinseltoken.com`);
   };
 
   const {

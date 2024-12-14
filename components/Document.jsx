@@ -16,7 +16,7 @@ const Document = () => {
 
   const handlePDF = () => {
     let url = `roadmap.pdf`;
-    saveAs(url, `@theblockchaincoders`);
+    saveAs(url, `@thetinseltoken.com`);
   };
   return (
     <section id="contact" class="document-area">
