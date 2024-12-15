@@ -47,7 +47,7 @@ const Banner = ({ title, type, action, path }) => {
               {/* New Airdrop Summary Section */}
               <div className="airdrop-summary mt-4 bg-[#20212e] p-4 rounded-lg">
               <p className="text-white text-sm">
-  Claiming your TNTC tokens is simple! Connect your MetaMask wallet, &nbsp;
+  Claiming your TNTC tokens is simple! Connect your wallet, &nbsp;
    <span className="block my-2">
       <span>Share </span>
     <FaShareAlt
@@ -60,7 +60,7 @@ const Banner = ({ title, type, action, path }) => {
    Copy your post ID, and fill out name and email form. Complete these 3 easy steps to participate in our massive 140 million token airdrop and be part of the Tinseltoken revolution!
 </p>
                 <div className="airdrop-stats flex justify-between mt-3">
-                  <div className="stat text-center">
+                  {/* <div className="stat text-center">
                     <span className="block text-[#00ff87] font-bold text-lg">140M</span>
                     <span className="block text-white text-xs">Total Tokens</span>
                   </div>
@@ -71,7 +71,7 @@ const Banner = ({ title, type, action, path }) => {
                   <div className="stat text-center">
                     <span className="block text-[#17fba2] font-bold text-lg">Dec 2024</span>
                     <span className="block text-white text-xs">Distribution</span>
-                  </div>
+                  </div> */}
                   <div className="stat text-center">
                   <AddTokenButton />
                   </div>

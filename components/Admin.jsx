@@ -130,7 +130,7 @@ const Admin = () => {
                   </i>
                 </div>
                 <div class="content">
-                  <h6 class="title">Airdrop Fee </h6>
+                  <h6 class="title">Airdrop Free </h6>
                   <AdminInput
                     name={"Airdrop Charge"}
                     placeholder={`${airdropFee || 0} BNB`}

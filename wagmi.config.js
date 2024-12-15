@@ -1,10 +1,18 @@
 import { createConfig, http } from 'wagmi';
 import {bsc, bscTestnet, polygon, polygonAmoy } from 'wagmi/chains';
 import { 
-  rainbowWallet, 
-  metaMaskWallet, 
-  walletConnectWallet, 
-  coinbaseWallet 
+  rainbowWallet,
+  metaMaskWallet,
+  trustWallet,
+  walletConnectWallet,
+  coinbaseWallet,
+  argentWallet,
+  ledgerWallet,
+  safeWallet,
+  braveWallet,
+  imTokenWallet,
+  injectedWallet,
+  omniWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 
@@ -16,9 +24,17 @@ const connectors = connectorsForWallets(
       groupName: 'Recommended',
       wallets: [
         metaMaskWallet,
+        trustWallet,
         rainbowWallet,
         walletConnectWallet,
-        coinbaseWallet
+        coinbaseWallet,
+        argentWallet,
+        ledgerWallet,
+        safeWallet,
+        braveWallet,
+        imTokenWallet,
+        injectedWallet,
+        omniWallet,
       ],
     },
   ],

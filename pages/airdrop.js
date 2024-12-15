@@ -27,7 +27,7 @@ const airdrop = () => {
             <Banner
               title={"Airdrop"}
               type={"Claim"}
-              action={"Fee Airdrop Tokens"}
+              action={"Free Airdrop Tokens"}
             />
             <Verify />
             <Document />

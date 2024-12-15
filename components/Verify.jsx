@@ -43,8 +43,8 @@ const Verify = () => {
 
   // Function to share on social media
   const shareContent = (platform) => {
-    const shareText = "🚀 Join the revolution! Introducing @tinseltoken, the future of decentralized finance and social impact. 💡 With every transaction, you're not just investing in a token, you're investing in positive change. 🌍 Let's empower communities, support sustainability, and drive meaningful impact together. Don't miss out on this opportunity to be part of something bigger than yourself. Invest in Tinseltoken today and make a difference while earning rewards! #@tinseltoken #crypto #tinseltoken #dapp 🌟🔗";
-    const websiteUrl = "https://www.tinseltoken.com/";
+    const shareText = "🚀 Join the @tinseltoken revolution! Transform DeFi while driving social impact. 🌍 Empower communities, support sustainability, and earn rewards. Be part of something bigger. Invest today! 💡 #Tinseltoken #Crypto #DApp";
+    const websiteUrl = "https://thetinseltoken.com/";
 
     switch (platform) {
       case 'twitter':
@@ -210,14 +210,14 @@ const Verify = () => {
                       className="new-cursour"
                       onClick={(e) =>
                         navigator.clipboard.writeText(
-                          "🚀 Join the revolution! Introducing @tinseltoken, the future of decentralized finance and social impact. 💡 With every transaction, you're not just investing in a token, you're investing in positive change. 🌍 Let's empower communities, support sustainability, and drive meaningful impact together. Don't miss out on this opportunity to be part of something bigger than yourself. Invest in Tinseltokentoday and make a difference while earning rewards! #@tinseltoken #crypto #tinseltoken #dapp 🌟🔗"
+                          "🚀 Join the @tinseltoken revolution! Transform DeFi while driving social impact. 🌍 Empower communities, support sustainability, and earn rewards. Be part of something bigger. Invest today! 💡 #Tinseltoken #Crypto #DApp"
                         )
                       }
                     />
                     <textarea
                       name="message"
                       disabled
-                      placeholder="🚀 Join the revolution! Introducing @tinseltoken, the future of decentralized finance and social impact. 💡 With every transaction, you're not just investing in a token, you're investing in positive change. 🌍 Let's empower communities, support sustainability, and drive meaningful impact together. Don't miss out on this opportunity to be part of something bigger than yourself. Invest in Tinseltoken today and make a difference while earning rewards! #@tinseltoken #crypto #tinseltoken #dapp 🌟🔗"
+                      placeholder="🚀 Join the @tinseltoken revolution! Transform DeFi while driving social impact. 🌍 Empower communities, support sustainability, and earn rewards. Be part of something bigger. Invest today! 💡 #Tinseltoken #Crypto #DApp"
                     ></textarea>
                   </div>
                   <button onClick={() => handleImage()} className="btn">

@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from "react";
 import { ethers, Contract } from "ethers";
 import toast from "react-hot-toast";

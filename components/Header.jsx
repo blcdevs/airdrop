@@ -134,12 +134,12 @@ const Header = () => {
                       ) : (
                         <li class="header-login">
                           <ConnectButton 
-              label="Connect Wallet"
-              chainStatus="icon"
-              showBalance={true}  // This will show the wallet balance
-              accountStatus={{
-                smallScreen: 'avatar',
-                largeScreen: 'full'
+                        label="Connect Wallet"
+                        chainStatus="icon"
+                        showBalance={true}  // This will show the wallet balance
+                        accountStatus={{
+                          smallScreen: 'avatar',
+                          largeScreen: 'full'
               }}  // Configures how the account info is displayed
             />
                         </li>
