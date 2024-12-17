@@ -135,13 +135,21 @@ export const handleNetworkSwitch = async () => {
 
 export const web3Provider = async () => {
   try {
-    const web3modal = new Web3Modal();
-    const connection = await web3modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-
-    return provider;
+    // For mobile wallets using WalletConnect
+    if (window.ethereum) {
+      return new ethers.providers.Web3Provider(window.ethereum);
+    }
+    
+    // Fallback for other wallet connections
+    const provider = await detectEthereumProvider();
+    if (provider) {
+      return new ethers.providers.Web3Provider(provider);
+    }
+    
+    throw new Error("No web3 provider detected");
   } catch (error) {
-    console.log(error);
+    console.error("Web3Provider Error:", error);
+    throw error;
   }
 };
 

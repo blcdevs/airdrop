@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 import { MdOutlineGeneratingTokens } from "react-icons/md";
 import { RiMenu3Line } from "react-icons/ri";
@@ -16,7 +16,31 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { CONTEXT } from "../context/index";
 
 const Header = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { connect, address, loader } = useContext(CONTEXT);
+
+    // Close mobile menu when address changes
+    useEffect(() => {
+      setIsMobileMenuOpen(false);
+    }, [address]);
+  
+    // Close mobile menu when loader changes to false
+    useEffect(() => {
+      if (!loader) {
+        setIsMobileMenuOpen(false);
+      }
+    }, [loader]);
+  
+    const toggleMobileMenu = () => {
+      setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
+  
+    // Update the mobile menu button click handler
+    const handleMobileMenuClick = () => {
+      if (loader) return; // Prevent menu toggle while loading
+      toggleMobileMenu();
+    };
+
   const menus = [
     {
       name: "Home",
@@ -75,7 +99,7 @@ const Header = () => {
                     {address ? (
                         <li className="header-login">
                           <Link href="/airdrop">
-                            {loader ? "loading..." : " Airdrop"}
+                            {loader ? "loading..." : " Go To Airdrop Page"}
                             <i className="fas">
                               <MdOutlineGeneratingTokens />
                             </i>
@@ -83,7 +107,15 @@ const Header = () => {
                         </li>
                       ) : (
                         <li className="header-login">
-                          <ConnectButton />
+                          <ConnectButton 
+                            label="Connect Wallet"
+                            chainStatus="icon"
+                            showBalance={true}  // This will show the wallet balance
+                            accountStatus={{
+                              smallScreen: 'avatar',
+                              largeScreen: 'full'
+                  }}  // Configures how the accou
+                          />
                         </li>
                       )}
 
@@ -94,7 +126,8 @@ const Header = () => {
                       </li> */}
                     </ul>
                   </div>
-                  <div class="mobile-nav-toggler">
+                  
+                  <div class="mobile-nav-toggler" onClick={handleMobileMenuClick}>
                     <i class="fas ">
                       <RiMenu3Line />
                     </i>
@@ -102,9 +135,9 @@ const Header = () => {
                 </nav>
               </div>
 
-              <div class="mobile-menu">
+              <div class={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
                 <nav class="menu-box">
-                  <div class="close-btn">
+                  <div class="close-btn" onClick={handleMobileMenuClick}>
                     <i class="fas ">
                       <IoMdClose />
                     </i>
@@ -128,128 +161,41 @@ const Header = () => {
                       ))}
 
                       {address ? (
-                        <li class="header-login">
-                          <Link href="/airdrop">Airdrop</Link>
+                        <li className="header-login">
+                          <Link href="/airdrop">
+                            {loader ? "loading..." : " Go To Airdrop Page"}
+                            <i className="fas">
+                              {/* <MdOutlineGeneratingTokens /> */}
+                            </i>
+                          </Link>
                         </li>
                       ) : (
-                        <li class="header-login">
+                        <li className="header-login">
                           <ConnectButton 
-                        label="Connect Wallet"
-                        chainStatus="icon"
-                        showBalance={true}  // This will show the wallet balance
-                        accountStatus={{
-                          smallScreen: 'avatar',
-                          largeScreen: 'full'
-              }}  // Configures how the account info is displayed
-            />
+                            label="Connect Wallet"
+                            chainStatus="icon"
+                            showBalance={true}  // This will show the wallet balance
+                            accountStatus={{
+                              smallScreen: 'avatar',
+                              largeScreen: 'full'
+                  }}  // Configures how the accou
+                          />
                         </li>
                       )}
                     </ul>
                   </div>
-                  <div class="social-links">
-                    <ul class="clearfix list-wrap">
-                      <li>
-                        <a href="#">
-                          <i class="fab ">
-                            <TiSocialFacebook />
-                          </i>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <i class="fab">
-                            <TiSocialTwitter />
-                          </i>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <i class="fab ">
-                            <TiSocialLinkedin />
-                          </i>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <i class="fab ">
-                            <TiSocialYoutube />
-                          </i>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <i class="fab ">
-                            <TiSocialGithub />
-                          </i>
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
+                 
                 </nav>
               </div>
-              <div class="menu-backdrop"></div>
+              {isMobileMenuOpen && (
+        <div className="menu-backdrop" onClick={handleMobileMenuClick}></div>
+      )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* <div class="extra-info">
-        <div class="close-icon menu-close">
-          <button>
-            <i class="fas ">
-              <IoMdClose />
-            </i>
-          </button>
-        </div>
-        <div class="logo-side mb-30">
-          <a href="index.html">
-            <img src="assets/img/logo/logo.png" width="90" height="90" alt="Logo" />
-          </a>
-        </div>
-        <div class="side-info mb-30">
-          <div class="contact-list mb-30">
-            <h4>Office Address</h4>
-            <p>
-              123/A, Miranda City Likaoli <br />
-              Prikano, Dope
-            </p>
-          </div>
-          <div class="contact-list mb-30">
-            <h4>Phone Number</h4>
-            <p>+0989 7876 9865 9</p>
-            <p>+(090) 8765 86543 85</p>
-          </div>
-          <div class="contact-list mb-30">
-            <h4>Email Address</h4>
-            <p>info@example.com</p>
-            <p>example.mail@hum.com</p>
-          </div>
-        </div>
-        <div class="social-icon-right mt-30">
-          <a href="#">
-            <i class="fab ">
-              <TiSocialFacebook />
-            </i>
-          </a>
-          <a href="#">
-            <i class="fab ">
-              <TiSocialTwitter />
-            </i>
-          </a>
-          <a href="#">
-            <i class="fab ">
-              <TiSocialGithub />
-            </i>
-          </a>
-          <a href="#">
-            <i class="fab ">
-              <TiSocialYoutube />
-            </i>
-          </a>
-        </div>
-      </div> */}
-
-      <div class="offcanvas-overly"></div>
+       <div class="offcanvas-overly"></div>
     </header>
   );
 };

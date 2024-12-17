@@ -3,6 +3,7 @@ import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import {bsc } from 'wagmi/chains';
 
 //INTERNAL IMPORT
 import { CONTEXT_Provider } from "../context/index";
@@ -17,8 +18,17 @@ export default function App({ Component, pageProps }) {
      <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider 
-          modalSize="compact"
-          showRecentTransactions={true}
+            modalSize="compact"
+            showRecentTransactions={true}
+            theme={darkTheme()}
+            addDappInfo={true}
+            appInfo={{
+              appName: 'Tinseltoken',
+            }}
+            // Add these new props
+            coolMode
+            initialChain={bsc} // Set your default chain
+
           // Remove the autoConnect prop to prevent automatic connection
         >
           <CONTEXT_Provider>

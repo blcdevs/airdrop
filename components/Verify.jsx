@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { saveAs } from "file-saver";
 import { BsTwitterX, BsInstagram } from "react-icons/bs";
 import { FaUser, FaShareAlt } from "react-icons/fa";  // Add FaShareAlt here
@@ -9,15 +9,18 @@ import { MdMarkEmailRead } from "react-icons/md";
 import { Twitter, Follow } from "./index";
 import { CONTEXT } from "../context/index";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useSendTransaction } from 'wagmi';
 
 const Verify = () => {
   const handleImage = () => {
     let url = `airdrop.png`;
     saveAs(url, `@tinseltoken`);
   };
-  
-  const { claimAirdrop, notifyError, address, connect, loader, claimStatus } =
-    useContext(CONTEXT);
+
+  const { sendTransaction } = useSendTransaction();
+
+  const { claimAirdrop, notifyError, address, loader, claimStatus } = useContext(CONTEXT);
+  const [localLoader, setLocalLoader] = useState(false);
 
   const [user, setUser] = useState({
     name: "",
@@ -26,19 +29,49 @@ const Verify = () => {
     email: "",
   });
 
+  useEffect(() => {
+    if (!loader) {
+      setLocalLoader(false);
+    }
+  }, [loader]);
+  
+
   const handleFormFieldChange = (fieldName, e) => {
     setUser({ ...user, [fieldName]: e.target.value });
   };
 
   const CALLING_AIRDROP = async () => {
-    const { name, twitterId, email } = user;
-
-    console.log(user);
-
-    if (!name || !twitterId || !email) {
-      return notifyError("Provide all details to claim airdrop");
+    try {
+      setLocalLoader(true);
+  
+      // Validate all required fields
+      if (!user.name.trim()) {
+        notifyError("Please enter your name");
+        return;
+      }
+      if (!user.twitterId.trim()) {
+        notifyError("Please enter your Twitter ID");
+        return;
+      }
+      if (!user.email.trim()) {
+        notifyError("Please enter your email");
+        return;
+      }
+  
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(user.email)) {
+        notifyError("Please enter a valid email address");
+        return;
+      }
+  
+      await claimAirdrop(user, sendTransaction);
+    } catch (error) {
+      console.log(error);
+      notifyError("Failed to claim airdrop");
+    } finally {
+      setLocalLoader(false);
     }
-    await claimAirdrop(user);
   };
 
   // Function to share on social media
@@ -117,28 +150,45 @@ const Verify = () => {
                     handleClick={(e) => handleFormFieldChange("email", e)}
                   />
 
-                  {address != "" && claimStatus == true ? (
-                    <button className="btn margin-btn-new">
-                      {loader ? "loading..." : "Already Claim Airdrop"}
-                    </button>
-                  ) : address != "" && claimStatus == false ? (
-                    <button
-                      onClick={() => CALLING_AIRDROP()}
-                      className="btn margin-btn-new"
-                    >
-                      {loader ? "loading..." : "Clain  Airdrop"}
-                    </button>
-                  ) : (
-                    <ConnectButton 
-                      label="Connect Wallet"
-                      chainStatus="icon"
-                      showBalance={true}
-                      accountStatus={{
-                        smallScreen: 'avatar',
-                        largeScreen: 'full'
-                      }}
-                    />
-                  )}
+{address != "" && claimStatus == true ? (
+  <button className="btn margin-btn-new" disabled>
+    {localLoader || loader ? "Loading..." : "Already Claimed Airdrop"}
+  </button>
+) : (
+  <ConnectButton.Custom>
+    {({
+      account,
+      chain,
+      openConnectModal,
+      openChainModal,
+      openAccountModal,
+      mounted,
+    }) => {
+      const ready = mounted;
+      if (!ready) return null;
+
+      if (!account) {
+        return (
+          <button className="btn margin-btn-new" onClick={openConnectModal}>
+            Connect Wallet
+          </button>
+        );
+      }
+
+      if (account && !claimStatus) {
+        return (
+          <button 
+            className="btn margin-btn-new" 
+            onClick={() => CALLING_AIRDROP()}
+          >
+            {localLoader || loader ? "Loading..." : "Claim Airdrop"}
+          </button>
+        );
+      }
+    }}
+  </ConnectButton.Custom>
+)}
+
                 </div>
               </div>
             </div>

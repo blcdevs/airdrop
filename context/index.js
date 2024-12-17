@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { ethers, Contract } from "ethers";
 import toast from "react-hot-toast";
 import { useAccount, useDisconnect, useConnect } from 'wagmi';
+
+
 import { parseErrorMsg } from "../Utils/index";
 
 //INTERNAL IMPORT
@@ -45,31 +47,57 @@ export const CONTEXT_Provider = ({ children }) => {
    //CONNECT WALLET
    const connect = async () => {
     try {
+      // Clear any existing timeouts
+      if (window.connectionTimeout) {
+        clearTimeout(window.connectionTimeout);
+      }
+  
+      setLoader(true);
+      window.connectionTimeout = setTimeout(() => {
+        setLoader(false);
+        notifyError("Connection timed out. Please try again.");
+      }, 15000); // Reduced timeout to 15 seconds
+  
       // First, check network
       await handleNetworkSwitch();
-
-      // If already connected via Wagmi, return
+  
+      // If already connected via Wagmi, stop loading and return
       if (isConnected) {
+        clearTimeout(window.connectionTimeout);
+        setLoader(false);
         setAddress(wagmiAddress);
         return;
       }
-
-      // Try to connect with the first available connector
-      const result = await connectAsync({ 
-        connector: connectors[0],
-      });
-
-      if (result.account) {
-        setAddress(result.account);
-      } else {
-        notifyError("Sorry, you have No account");
+  
+      // Try to connect with WalletConnect for mobile
+      const walletConnectConnector = connectors.find(
+        (connector) => connector.id === 'walletConnect'
+      );
+  
+      try {
+        const result = walletConnectConnector 
+          ? await connectAsync({ connector: walletConnectConnector })
+          : await connectAsync({ connector: connectors[0] });
+  
+        if (result?.account) {
+          setAddress(result.account);
+        } else {
+          throw new Error("No account found");
+        }
+      } catch (error) {
+        throw error;
+      } finally {
+        clearTimeout(window.connectionTimeout);
+        setLoader(false);
       }
     } catch (error) {
+      setLoader(false);
       const errorMsg = parseErrorMsg(error);
       notifyError(errorMsg);
-      console.log(error);
+      console.error("Connection error:", error);
     }
   };
+
 
    //CHECH IF WALLET CONNECTED
    const checkIfWalletConnected = async () => {
@@ -85,90 +113,134 @@ export const CONTEXT_Provider = ({ children }) => {
   };
 
   const fetchInitialData = async () => {
+    // Create a timeout promise
+    const timeout = (ms) => new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), ms)
+    );
+  
     try {
-      if (address) {
-        setLoader(true);
-        //GET USER ACCOUNT
-        const account = await checkIfWalletConnected();
-        //GET USER BALANCE
-        const balance = await getBalance();
+      // Don't proceed if no address
+      if (!address) return;
+  
+      setLoader(true);
+  
+      // Create an AbortController for cancelling fetch operations
+      const controller = new AbortController();
+      const signal = controller.signal;
+  
+      // Set timeout for entire operation
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        setLoader(false);
+        notifyError("Operation timed out. Please try again.");
+      }, 30000); // 30 second timeout
+  
+      try {
+        // Batch all initial queries together
+        const [
+          account,
+          balance,
+          AIRDROP_CONTRACT,
+        ] = await Promise.race([
+          Promise.all([
+            checkIfWalletConnected(),
+            getBalance(),
+            AirdropContract(),
+          ]),
+          timeout(15000) // 15 second timeout for initial queries
+        ]);
+  
+        if (!account) {
+          throw new Error("No account found");
+        }
+  
+        // Set initial state
         setBalance(ethers.utils.formatEther(balance.toString()));
         setAddress(account);
-
-        //TBCDistributor_CONTRACT
-        const AIRDROP_CONTRACT = await AirdropContract();
-
-        //TOKEN CONTRACT
-        const liveTokenAddr = await AIRDROP_CONTRACT._tokenContract();
+  
+        // Batch contract queries together
+        const [
+          liveTokenAddr,
+          contractOwner,
+          contractTokenBal,
+          fee,
+          contractBalanceBal,
+          airdropAmountUser,
+          getAllUsers,
+        ] = await Promise.race([
+          Promise.all([
+            AIRDROP_CONTRACT._tokenContract(),
+            AIRDROP_CONTRACT.owner(),
+            AIRDROP_CONTRACT.tokenBalance(iphone_ADDRESS),
+            AIRDROP_CONTRACT._fee(),
+            AIRDROP_CONTRACT.contractBalance(),
+            AIRDROP_CONTRACT._airdropAmount(),
+            AIRDROP_CONTRACT.getAllAirdrops(),
+          ]),
+          timeout(15000) // 15 second timeout for contract queries
+        ]);
+  
+        // Update contract-related state
         setConnectedTokenAddr(liveTokenAddr);
-
-        //CONTRACT OWNER ADDRESS
-        const contractOwner = await AIRDROP_CONTRACT.owner();
         setContractOwnerAddr(contractOwner);
-
-        //AIRDROP BLANCE CHECK
-        const contractTokenBal = await AIRDROP_CONTRACT.tokenBalance(
-          iphone_ADDRESS
-        );
-        setAirdropBalance(
-          ethers.utils.formatEther(contractTokenBal.toString())
-        );
-        console.log(ethers.utils.formatEther(contractTokenBal.toString()));
-
-        //FEE
-        const fee = await AIRDROP_CONTRACT._fee();
+        setAirdropBalance(ethers.utils.formatEther(contractTokenBal.toString()));
         setAirdropFee(ethers.utils.formatEther(fee));
-
-        //CONTRACT BALANCE
-        const contractBalanceBal = await AIRDROP_CONTRACT.contractBalance();
         setContractBalEther(ethers.utils.formatEther(contractBalanceBal));
-
-        //AIRDROP AMOUNT PER USER
-        const airdropAmountUser = await AIRDROP_CONTRACT._airdropAmount();
         setAirdropPerUser(ethers.utils.formatEther(airdropAmountUser));
-
-        //GET ALL  USERS
-        const getAllUsers = await AIRDROP_CONTRACT.getAllAirdrops();
-
-        const parsedAllUsers = getAllUsers.map((user, i) => ({
+  
+        // Parse users data
+        const parsedAllUsers = getAllUsers.map((user) => ({
           id: user[0].toNumber(),
           useraddress: user[1],
           name: user[2],
           twitterId: user[3],
-          // linkedInUrl: user[4],
-          // instagramUrl: user[5],
           email: user[6],
           timestamp: new Date(user[7].toNumber() * 1000).toDateString(),
         }));
-
-        console.log(parsedAllUsers);
-
+  
         setAllUers(parsedAllUsers);
-
-        //TOKEN CONTRACT BALANCE
-        const TOKEN_CONTRACT = await IphoneContract();
-        const selectedTokenBal = await TOKEN_CONTRACT.balanceOf(account);
-
-        const tokenClaimUserBal = ethers.utils.formatEther(
-          selectedTokenBal.toString()
-        );
-
-        if (tokenClaimUserBal <= 1) {
-          const filteredCampaigns = getAllUsers.filter((user) =>
-            user.useraddress.toLowerCase() === account.toLowerCase()
-              ? setClaimStatus(true)
-              : setClaimStatus(false)
+  
+        // Get token balance and set claim status
+        try {
+          const TOKEN_CONTRACT = await IphoneContract();
+          const selectedTokenBal = await TOKEN_CONTRACT.balanceOf(account);
+          const tokenClaimUserBal = ethers.utils.formatEther(selectedTokenBal.toString());
+  
+          // Set claim status based on balance and user history
+          const hasAlreadyClaimed = parsedAllUsers.some(
+            user => user.useraddress.toLowerCase() === account.toLowerCase()
           );
-        } else {
-          setClaimStatus(true);
+  
+          setClaimStatus(tokenClaimUserBal > 1 || hasAlreadyClaimed);
+  
+        } catch (error) {
+          console.error("Error checking token balance:", error);
+          // Don't fail completely if token balance check fails
+          setClaimStatus(false);
         }
-
-        setLoader(false);
+  
+      } finally {
+        clearTimeout(timeoutId);
       }
+  
+      setLoader(false);
+  
     } catch (error) {
-      const errorMsg = parseErrorMsg(error);
-      notifyError(errorMsg);
-      console.log(error);
+      setLoader(false);
+      
+      // Handle specific error types
+      if (error.message === 'Timeout') {
+        notifyError("Operation timed out. Please check your connection and try again.");
+      } else if (error.code === 'NETWORK_ERROR') {
+        notifyError("Network error. Please check your connection.");
+      } else if (error.code === 'USER_REJECTED') {
+        notifyError("Operation cancelled by user.");
+      } else {
+        const errorMsg = parseErrorMsg(error);
+        notifyError(errorMsg || "Failed to load data. Please try again.");
+      }
+      
+      console.error("Fetch Initial Data Error:", error);
     }
   };
 
@@ -194,42 +266,53 @@ useEffect(() => {
   fetchInitialData();
 }, [address, count]);
 
-  const claimAirdrop = async (user) => {
-    try {
-      setLoader(true);
-      //DATA
-      const { name, twitterId, email } = user;
-      //GET USER ACCOUNT
-      const account = await checkIfWalletConnected();
-      const PROVIDER = await web3Provider();
-      const signer = PROVIDER.getSigner();
-      const AIRDROP_CONTRACT = await AirdropContract();
+const claimAirdrop = async (user, sendTransaction) => {
+  try {
+    setLoader(true);
+    
+    if (!isConnected || !wagmiAddress) {
+      notifyError("Please connect your wallet first");
+      setLoader(false);
+      return;
+    }
 
-      const feeCharge = await AIRDROP_CONTRACT._fee();
+    const { name, twitterId, email } = user;
 
-      const claim = await AIRDROP_CONTRACT.connect(signer).dropTokens(
+    // Get contract instance
+    const AIRDROP_CONTRACT = await AirdropContract();
+    const feeCharge = await AIRDROP_CONTRACT._fee();
+
+    // Create transaction
+    const tx = await sendTransaction({
+      to: airdrop_ADDRESS,
+      data: AIRDROP_CONTRACT.interface.encodeFunctionData('dropTokens', [
         name,
         twitterId,
-        // linkedInUrl,
-        // instagramUrl,
-        email,
-        {
-          value: feeCharge.toString(),
-          gasLimit: ethers.utils.hexlify(1000000),
-        }
-      );
-      await claim.wait();
+        email
+      ]),
+      value: feeCharge.toString(),
+    });
 
-      setLoader(false);
-      notifySuccess("Liqudity add Successfully ");
-      setCount(count + 1);
-      // window.location.reload();
-    } catch (error) {
-      const errorMsg = parseErrorMsg(error);
-      notifyError(errorMsg);
-      console.log(error);
+    if (tx) {
+      await tx.wait(); // Wait for transaction confirmation
+      notifySuccess("Airdrop claimed successfully!");
+      setCount(prev => prev + 1);
     }
-  };
+
+  } catch (error) {
+    console.error("Claim Airdrop Error:", error);
+    if (error.code === 4001) {
+      notifyError("Transaction rejected by user");
+    } else if (error.message.includes("user rejected")) {
+      notifyError("Transaction cancelled");
+    } else {
+      const errorMsg = parseErrorMsg(error);
+      notifyError(errorMsg || "Failed to claim airdrop");
+    }
+  } finally {
+    setLoader(false);
+  }
+};
 
   //ADMIN FUNCTION
   const SET_TOKEN_CONTRACT = async (tokenContract) => {
