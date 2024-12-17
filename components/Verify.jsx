@@ -25,7 +25,7 @@ const Verify = () => {
   const [user, setUser] = useState({
     name: "",
     twitterId: "",
-    // instagramUrl: "",
+   
     email: "",
   });
 
