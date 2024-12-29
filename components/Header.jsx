@@ -3,13 +3,9 @@ import Link from "next/link";
 import { MdOutlineGeneratingTokens } from "react-icons/md";
 import { RiMenu3Line } from "react-icons/ri";
 import { IoMdClose } from "react-icons/io";
-import {
-  TiSocialTwitter,
-  TiSocialLinkedin,
-  TiSocialYoutube,
-  TiSocialFacebook,
-  TiSocialGithub,
-} from "react-icons/ti";
+import { useRouter } from 'next/router'; // Add this import at the top
+
+
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 //INTERNAL IMPORT
@@ -18,6 +14,17 @@ import { CONTEXT } from "../context/index";
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { connect, address, loader } = useContext(CONTEXT);
+  const router = useRouter(); // Initialize router
+  
+
+ // Only redirect to /airdrop on initial wallet connection
+ useEffect(() => {
+  if (address && router.pathname === '/') {
+    router.push('/airdrop');
+  }
+}, [address]); // Only trigger on address changes
+
+
 
     // Close mobile menu when address changes
     useEffect(() => {
@@ -58,14 +65,7 @@ const Header = () => {
       name: "ICO Chart",
       path: "#chart",
     },
-    // {
-    //   name: "FAQ",
-    //   path: "#faq",
-    // },
-    // {
-    //   name: "Contact",
-    //   path: "#contact",
-    // },
+   
   ];
   return (
     <header id="header">
@@ -80,22 +80,41 @@ const Header = () => {
                       <img src="assets/img/logo/logo.png" width="90" height="90" alt="Logo" />
                     </Link>
                   </div>
-                  <div class="navbar-wrap  d-none d-lg-flex">
-                    <ul class="navigation">
+
+               <div className="show-onmobile">
+                  <ConnectButton 
+                    label="Connect Wallet"
+                    chainStatus="icon"
+                    showBalance={true}  
+                    accountStatus={{
+                      smallScreen: 'avatar',
+                      largeScreen: 'full'
+                    }}
+                    onConnect={() => {
+                      // Optional: You can also handle the redirect here
+                      if (address) {
+                        router.push('/airdrop');
+                      }
+                    }}
+                  />
+                </div>
+
+                  <div className="navbar-wrap  d-none d-lg-flex">
+                    <ul className="navigation">
                       {menus.map((menu, index) => (
                         <li
-                          class={menu.name == "Home" ? "active" : ""}
+                        className={menu.name == "Home" ? "active" : ""}
                           key={index}
                         >
-                          <a href={`${menu.path}`} class="section-link">
+                          <a href={`${menu.path}`} className="section-link">
                             {menu.name}
                           </a>
                         </li>
                       ))}
                     </ul>
                   </div>
-                  <div class="header-action">
-                    <ul class="list-wrap">
+                  <div className="header-action">
+                    <ul className="list-wrap">
                     {address ? (
                         <li className="header-login">
                           <Link href="/airdrop">
@@ -114,16 +133,30 @@ const Header = () => {
                             accountStatus={{
                               smallScreen: 'avatar',
                               largeScreen: 'full'
-                  }}  // Configures how the accou
+                          }}  // Configures how the accou
                           />
                         </li>
                       )}
 
-                      {/* <li class="offcanvas-menu">
-                        <a class="menu-tigger">
-                          <RiMenu3Line />
-                        </a>
-                      </li> */}
+                     
+                       
+                      
+                        {/* Disconnect Button - Only shows when connected */}
+                          {address && (
+                            <div className="disconnect-button-wrapper">
+                              <ConnectButton 
+                                label="DISCONNECT"
+                                chainStatus="icon"
+                                showBalance={true}  
+                                accountStatus={{
+                                  smallScreen: 'avatar',
+                                  largeScreen: 'full'
+                                }}  
+                              />
+                            </div>
+                          )}
+
+                     
                     </ul>
                   </div>
                   
@@ -135,6 +168,8 @@ const Header = () => {
                 </nav>
               </div>
 
+              
+
               <div class={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
                 <nav class="menu-box">
                   <div class="close-btn" onClick={handleMobileMenuClick}>
@@ -144,8 +179,26 @@ const Header = () => {
                   </div>
                   <div class="nav-logo">
                     <a href="index.html">
-                      <img src="assets/img/logo/logo.png" width="90" height="90" alt="Logo" />
+                      <img src="assets/img/logo/logo.png" width="70" height="70" alt="Logo" />
                     </a>
+
+
+                    
+                    {/* Disconnect Button - Only shows when connected */}
+                    {address && (
+                                <div className="disconnect-button-wrapper">
+                                  <ConnectButton 
+                                    label="DISCONNECT"
+                                    chainStatus="icon"
+                                    showBalance={true}  
+                                    accountStatus={{
+                                      smallScreen: 'avatar',
+                                      largeScreen: 'full'
+                                    }}  
+                                  />
+                                </div>
+                              )}
+                     
                   </div>
                   <div class="menu-outer">
                     <ul class="navigation">
@@ -182,6 +235,8 @@ const Header = () => {
                           />
                         </li>
                       )}
+
+                      
                     </ul>
                   </div>
                  

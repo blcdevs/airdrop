@@ -16,10 +16,10 @@ const Hero = () => {
                 Tinseltoken (TNTC): <br />
                 <span>Revolutionizing Blockchain Accessibility</span>
               </h2>
-              <p>
+              {/* <p>
                 Join the blockchain revolution with Tinseltoken, a community-driven 
                 digital asset designed to democratize cryptocurrency.                  
-              </p>
+              </p> */}
 
               <p>
               Tinseltoken (TNTC) is offering a massive airdrop of 140 million tokens (70% of total supply). Distribute in December 2024, this airdrop aims to democratize blockchain access and foster global community engagement. Claim your free TNTC tokens through our simple 3-step process!
@@ -27,7 +27,7 @@ const Hero = () => {
               </p>
             </div>
 
-            <div class="contribution-btn">
+            <div className="contribution-btn">
               <Link href="/airdrop" class="btn">
                 Get Airdrop Token
               </Link>

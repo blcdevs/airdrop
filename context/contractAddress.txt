@@ -1,0 +1,9 @@
+Main Net:
+
+Last Update
+export const airdrop_ADDRESS = "0xd5f278DAEECc7833bbd6531a52ea76Cc3f968037";
+const airdrop_ABI = airdrop.abi;
+
+//IPHONE
+export const iphone_ADDRESS = "0x83B54268CB2FCafc2C982f946224cfe398993CbF";
+const iphone_ABI = iphone.abi;

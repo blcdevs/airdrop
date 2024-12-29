@@ -1,6 +1,7 @@
 import React from "react";
 import { FaUser, FaShareAlt } from "react-icons/fa";  // Add FaShareAlt here
 import AddTokenButton from "../components/AddTokenButton"; 
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Banner = ({ title, type, action, path }) => {
 
@@ -60,21 +61,11 @@ const Banner = ({ title, type, action, path }) => {
    Copy your post ID, and fill out name and email form. Complete these 3 easy steps to participate in our massive 140 million token airdrop and be part of the Tinseltoken revolution!
 </p>
                 <div className="airdrop-stats flex justify-between mt-3">
-                  {/* <div className="stat text-center">
-                    <span className="block text-[#00ff87] font-bold text-lg">140M</span>
-                    <span className="block text-white text-xs">Total Tokens</span>
-                  </div>
-                  <div className="stat text-center">
-                    <span className="block text-[#0cfd95] font-bold text-lg">70%</span>
-                    <span className="block text-white text-xs">Airdrop Share</span>
-                  </div>
-                  <div className="stat text-center">
-                    <span className="block text-[#17fba2] font-bold text-lg">Dec 2024</span>
-                    <span className="block text-white text-xs">Distribution</span>
-                  </div> */}
+                 
                   <div className="stat text-center">
                   <AddTokenButton />
                   </div>
+
                 </div>
               </div>
             </div>

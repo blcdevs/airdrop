@@ -153,6 +153,23 @@
   --cell-color: #60efff;
 }
 
+
+/* Hide by default (desktop) */
+.show-onmobile {
+  display: none;
+}
+
+/* Show only on mobile devices */
+@media (max-width: 853px) {
+  .show-onmobile {
+    display: block;
+    position: absolute;
+    right: 100px; /* Adjust based on your layout */
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
 /*Animation*/
 @keyframes ripple {
   0% {
@@ -169,5 +186,174 @@
 
   100% {
     background-color: transparent;
+  }
+}
+
+
+.referral-stats-container {
+  background: #1a1a1a;
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 2rem 0;
+  color: white;
+}
+
+.referral-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.share-icon {
+  font-size: 1.5rem;
+  color: #7b3fe4;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: #2a2a2a;
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  color: #7b3fe4;
+}
+
+.stat-info h4 {
+  margin: 0;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.stat-info p {
+  margin: 0.5rem 0 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.referral-link-section {
+  margin-top: 2rem;
+}
+
+.link-box {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.link-box input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background: #2a2a2a;
+  color: white;
+}
+
+.link-box button,
+.claim-button {
+  background: #7b3fe4;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.link-box button:hover,
+.claim-button:hover {
+  background: #6032b0;
+}
+
+.claim-button {
+  width: 100%;
+  margin-top: 2rem;
+  font-size: 1.1rem;
+}
+
+.claim-button:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
+
+.referral-list-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.referral-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.referral-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: monospace;
+  text-align: center;
+}
+
+.claimed-message {
+  margin-top: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.link-box input::placeholder {
+  color: #666;
+}
+
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  background: #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.refresh-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.refresh-button .spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }

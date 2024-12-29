@@ -11,6 +11,7 @@ import Header from "./Header";
 import Hero from "./Hero";
 import Scrollup from "./Scrollup";
 import Verify from "./Verify";
+import ReferralStats from "./ReferralStats";
 import Loader from "./Loader";
 import Admin from "./Admin";
 import AdminInput from "./AdminInput";
@@ -42,6 +43,7 @@ export {
   Twitter,
   Instagram,
   Follow,
+  ReferralStats,
   Loader,
   Admin,
   AdminInput,

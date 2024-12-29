@@ -4,12 +4,14 @@ import { BsTwitterX, BsInstagram } from "react-icons/bs";
 import { FaUser, FaShareAlt } from "react-icons/fa";  // Add FaShareAlt here
 import { HiOutlineClipboardDocument } from "react-icons/hi2";
 import { MdMarkEmailRead } from "react-icons/md";
+import { ReferralStats } from './index'; // If importing from components/index.js
 
 //INTERNAL IMPORT
 import { Twitter, Follow } from "./index";
 import { CONTEXT } from "../context/index";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useSendTransaction } from 'wagmi';
+import { bsc, bscTestnet } from 'wagmi/chains';
 
 const Verify = () => {
   const handleImage = () => {
@@ -23,9 +25,7 @@ const Verify = () => {
   const [localLoader, setLocalLoader] = useState(false);
 
   const [user, setUser] = useState({
-    name: "",
     twitterId: "",
-   
     email: "",
   });
 
@@ -45,10 +45,7 @@ const Verify = () => {
       setLocalLoader(true);
   
       // Validate all required fields
-      if (!user.name.trim()) {
-        notifyError("Please enter your name");
-        return;
-      }
+     
       if (!user.twitterId.trim()) {
         notifyError("Please enter your Twitter ID");
         return;
@@ -65,10 +62,14 @@ const Verify = () => {
         return;
       }
   
-      await claimAirdrop(user, sendTransaction);
+      console.log("Starting airdrop claim...");
+      console.log("User data:", user);
+      
+      await claimAirdrop(user);
+      
     } catch (error) {
-      console.log(error);
-      notifyError("Failed to claim airdrop");
+      console.error("Airdrop claim error in component:", error);
+      notifyError(error.message || "Failed to claim airdrop");
     } finally {
       setLocalLoader(false);
     }
@@ -103,95 +104,106 @@ const Verify = () => {
                   <i className="fas ">
                     <BsTwitterX />
                   </i>
+
+                  <i className="fas ">
+                 
+                  </i>
+                  
                 </div>
+
                 <div className="content">
-                  <h6 className="title">Twitter </h6>
+                <h6 className="title">
+                  <FaShareAlt
+                          className="new-cursour ml-3 new-cursour" // Added margin-left for spacing
+                          onClick={() => shareContent('twitter')}
+                        />
+                     </h6>
+                  <h6 className="title">Click the Share Button </h6>
                   <Twitter
                     user={user}
                     handleClick={(e) => handleFormFieldChange("twitterId", e)}
                   />
-                </div>
-              </div>
-            </div>
-            {/* <div className="col-xl-3 col-lg-4 col-md-6">
-              <div className="contact-info-item">
-                <div className="icon">
-                  <i className="fas ">
-                    <BsInstagram />
-                  </i>
-                </div>
-                <div className="content">
-                  <h6 className="title">Instagram</h6>
 
-                  <Instagram
-                    user={user}
-                    handleClick={(e) =>
-                      handleFormFieldChange("instagramUrl", e)
-                    }
-                  />
-                </div>
-              </div>
-            </div> */}
-            <div className="col-xl-3 col-lg-4 col-md-6">
-              <div className="contact-info-item">
-                <div className="icon">
-                  <i className="fas ">
-                    <FaUser />
-                  </i>
-                </div>
-                <div className="content">
-                  <h6 className="title">Email</h6>
-                  <Follow
-                    name={"Name"}
-                    handleClick={(e) => handleFormFieldChange("name", e)}
-                  />
-                  <Follow
+                    <Follow
                     name={"Email"}
                     handleClick={(e) => handleFormFieldChange("email", e)}
                   />
 
-{address != "" && claimStatus == true ? (
-  <button className="btn margin-btn-new" disabled>
-    {localLoader || loader ? "Loading..." : "Already Claimed Airdrop"}
-  </button>
-) : (
-  <ConnectButton.Custom>
-    {({
-      account,
-      chain,
-      openConnectModal,
-      openChainModal,
-      openAccountModal,
-      mounted,
-    }) => {
-      const ready = mounted;
-      if (!ready) return null;
+                        {address != "" && claimStatus == true ? (
+                        <button className="btn margin-btn-new" disabled>
+                          {localLoader || loader ? "Loading..." : "Already Claimed Airdrop"}
+                        </button>
+                      ) : (
+                        <ConnectButton.Custom>
+                          {({
+                            account,
+                            chain,
+                            openConnectModal,
+                            openChainModal,
+                            openAccountModal,
+                            mounted,
+                          }) => {
+                            const ready = mounted;
+                            if (!ready) return null;
 
-      if (!account) {
-        return (
-          <button className="btn margin-btn-new" onClick={openConnectModal}>
-            Connect Wallet
-          </button>
-        );
-      }
+                            if (!account) {
+                              return (
+                                <button 
+                                  className="btn margin-btn-new" 
+                                  onClick={openConnectModal}
+                                >
+                                  Connect Wallet
+                                </button>
+                              );
+                            }
 
-      if (account && !claimStatus) {
-        return (
-          <button 
-            className="btn margin-btn-new" 
-            onClick={() => CALLING_AIRDROP()}
-          >
-            {localLoader || loader ? "Loading..." : "Claim Airdrop"}
-          </button>
-        );
-      }
-    }}
-  </ConnectButton.Custom>
-)}
+                            // Check if wrong network
+                            if (chain?.id !== bscTestnet.id) {
+                              return (
+                                <button 
+                                  className="btn margin-btn-new" 
+                                  onClick={openChainModal}
+                                >
+                                  Switch to BSC
+                                </button>
+                              );
+                            }
+
+                            if (account && !claimStatus) {
+                              return (
+                                <button 
+                                  className="btn margin-btn-new" 
+                                  onClick={() => CALLING_AIRDROP()}
+                                >
+                                  {localLoader || loader ? "Processing..." : "Claim Airdrop"}
+                                </button>
+                              );
+                            }
+                          }}
+                        </ConnectButton.Custom>
+                      )}
+
+                        
+          {address && (
+            <div className="disconnect-button-wrapper">
+              <ConnectButton 
+                label="DISCONNECT"
+                chainStatus="icon"
+                showBalance={true}  
+                accountStatus={{
+                  smallScreen: 'avatar',
+                  largeScreen: 'full'
+                }}  
+              />
+            </div>
+          )}
 
                 </div>
               </div>
             </div>
+
+            <ReferralStats/>
+           
           </div>
         </div>
         <div className="contact-form-wrap">

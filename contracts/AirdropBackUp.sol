@@ -368,113 +368,46 @@ abstract contract Token is ERC20 {}
 contract Airdrop is Ownable {
     using SafeMath for uint;
 
-    // Token and Airdrop variables
     address public _tokenContract;
     uint256 public _airdropAmount;
+    // fee 1000000000000000 = 0.005 MATIC and set it 0 if no fees
     uint256 public _fee = 0.005 ether;
-    uint256 public totalAirdrops;
-
-    // Referral variables
-    uint256 public _referralReward = 1 ether; // 1 token with 18 decimals
-    mapping(address => address[]) public userReferrals;
-    mapping(address => uint256) public referralRewards;
-    mapping(address => bool) public hasClaimedReferralReward;
+    mapping(uint256 => AirdropInfo) public airdropInfos;
+   
 
     struct AirdropInfo {
         uint256 id;
         address useraddress;
-        // string name;
+        string name;
         string twitterId;
+        // string linkedInUrl;
+        // string instagramUrl;
         string email;
         uint256 timestamp;
     }
 
-    mapping(uint256 => AirdropInfo) public airdropInfos;
-
-    // Events
+    uint256 public totalAirdrops;
     event EtherTransfer(address beneficiary, uint amount);
-    event ReferralRegistered(address indexed referrer, address indexed referred);
-    event ReferralRewardClaimed(address indexed referrer, uint256 amount);
 
-    constructor(address tokenContract, uint256 airdropAmount) {
-        _tokenContract = tokenContract;
-        _airdropAmount = airdropAmount;
+
+    constructor(address tokenContract, uint256 airdropAmount)  {
+      _tokenContract = tokenContract;
+      _airdropAmount = airdropAmount;
     }
 
-    // Airdrop Functions
-    function dropTokens(string memory _twitterId, string memory _email) public payable returns (bool) {
+    function dropTokens(string memory _name, string memory _twitterId, string memory _email) public payable returns (bool) {
+
         require(msg.value >= _fee, "Not enough cash");
-        require(Token(_tokenContract).balanceOf(msg.sender) < _airdropAmount, "Already claimed");
-        require(Token(_tokenContract).transfer(msg.sender, _airdropAmount), "Transfer failed");
+        require(Token(_tokenContract).balanceOf(msg.sender) < _airdropAmount);
+        require(Token(_tokenContract).transfer(msg.sender, _airdropAmount));
         
         uint256 airdropId = totalAirdrops++;
-        airdropInfos[airdropId] = AirdropInfo(
-            airdropId, 
-            msg.sender, 
-            // _name,
-            _twitterId,
-            _email, 
-            block.timestamp
-        );
-        
+        airdropInfos[airdropId] = AirdropInfo(airdropId, msg.sender, _name,_twitterId,_email, block.timestamp);
+       
+
         return true;
     }
 
-    // Referral Functions
-// Update the registerReferral function
-function registerReferral(address referrer) external {
-    require(referrer != msg.sender, "Cannot refer yourself");
-    require(referrer != address(0), "Invalid referrer address");
-    
-    // Add debug event
-    emit Debug("Registering referral", msg.sender, referrer);
-    
-    // Check if the user is already in the referrer's list
-    address[] memory referrals = userReferrals[referrer];
-    for (uint i = 0; i < referrals.length; i++) {
-        require(referrals[i] != msg.sender, "Already referred by this referrer");
-    }
-    
-    // Add the referred user to the referrer's list
-    userReferrals[referrer].push(msg.sender);
-    
-    // Add referral reward to referrer's balance
-    referralRewards[referrer] = referralRewards[referrer].add(_referralReward);
-    
-    // Add debug event
-    emit Debug("Referral registered successfully", msg.sender, referrer);
-    emit ReferralRegistered(referrer, msg.sender);
-}
-
-// Add debug event
-event Debug(string message, address user, address referrer);
-
-    function claimReferralRewards() external {
-        uint256 rewards = referralRewards[msg.sender];
-        require(rewards > 0, "No rewards to claim");
-        require(!hasClaimedReferralReward[msg.sender], "Already claimed rewards");
-        
-        hasClaimedReferralReward[msg.sender] = true;
-        referralRewards[msg.sender] = 0;
-        
-        require(Token(_tokenContract).transfer(msg.sender, rewards), "Transfer failed");
-        
-        emit ReferralRewardClaimed(msg.sender, rewards);
-    }
-
-    function getReferralStats(address user) external view returns (
-        uint256 totalReferrals,
-        uint256 pendingRewards,
-        bool hasClaimed
-    ) {
-        return (
-            userReferrals[user].length,
-            referralRewards[user],
-            hasClaimedReferralReward[user]
-        );
-    }
-
-    // Admin Functions
     function setTokenContract(address tokenContract) external onlyOwner {
         _tokenContract = tokenContract;
     }
@@ -487,12 +420,8 @@ event Debug(string message, address user, address referrer);
         _fee = fee;
     }
 
-    function setReferralReward(uint256 amount) external onlyOwner {
-        _referralReward = amount;
-    }
-
-    // Utility Functions
     function tokenBalance(address _tokenAddr) public view returns (uint256) {
+
         return Token(_tokenAddr).balanceOf(address(this));
     }
 
@@ -508,6 +437,7 @@ event Debug(string message, address user, address referrer);
         return address(this).balance;
     }
 
+
     function getAllAirdrops() external view returns (AirdropInfo[] memory) {
         AirdropInfo[] memory _airdrops = new AirdropInfo[](totalAirdrops);
         for (uint256 i = 0; i < totalAirdrops; i++) {
@@ -516,18 +446,5 @@ event Debug(string message, address user, address referrer);
         return _airdrops;
     }
 
-// Fix the isAlreadyReferred function
-function isAlreadyReferred(address user) public view returns (bool) {
-    // Check all possible referrers
-    for (uint i = 0; i < totalAirdrops; i++) {
-        address[] memory referrals = userReferrals[airdropInfos[i].useraddress];
-        for (uint j = 0; j < referrals.length; j++) {
-            if (referrals[j] == user) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
 
 }

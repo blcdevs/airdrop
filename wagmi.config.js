@@ -1,5 +1,7 @@
 import { createConfig, http } from 'wagmi';
-import {bsc, bscTestnet, polygon, polygonAmoy } from 'wagmi/chains';
+// import {bsc } from 'wagmi/chains';
+import {bscTestnet } from 'wagmi/chains';
+
 import { 
     rainbowWallet,
     metaMaskWallet,
@@ -21,12 +23,17 @@ const projectId = 'c87b9758c721b75cf076ef3cc19ddd58'; // Get from https://cloud.
 const connectors = connectorsForWallets(
   [
     {
-      groupName: 'Recommended',
+      groupName: 'Mobile Friendly',
       wallets: [
-        walletConnectWallet, // Move WalletConnect to the top for mobile priority
-        metaMaskWallet,
+        walletConnectWallet,
         trustWallet,
         rainbowWallet,
+        metaMaskWallet,
+      ],
+    },
+    {
+      groupName: 'Other',
+      wallets: [
         coinbaseWallet,
         argentWallet,
         ledgerWallet,
@@ -41,16 +48,16 @@ const connectors = connectorsForWallets(
   {
     projectId,
     appName: 'Tinseltoken',
+    chains: [bscTestnet], // Prioritize BSC
+    initialChain: bscTestnet.id,
   }
 );
 
 export const config = createConfig({
   connectors,
-  chains: [bsc, bscTestnet, polygon, polygonAmoy],
+  chains: [bscTestnet],
   transports: {
-    [bsc.id]: http(),
     [bscTestnet.id]: http(),
-    [polygon.id]: http(),
-    [polygonAmoy.id]: http(),
+
   },
 });

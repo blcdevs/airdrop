@@ -3,7 +3,8 @@ import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import {bsc } from 'wagmi/chains';
+import {bscTestnet } from 'wagmi/chains';
+import Head from 'next/head'; // Add this import
 
 //INTERNAL IMPORT
 import { CONTEXT_Provider } from "../context/index";
@@ -15,6 +16,13 @@ export default function App({ Component, pageProps }) {
 
   return (
     <>
+
+    <Head>
+        <link rel="icon" href="/icon.png" />
+        <link rel="shortcut icon" href="/icon.png" />
+      </Head>
+
+
      <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider 
@@ -27,7 +35,7 @@ export default function App({ Component, pageProps }) {
             }}
             // Add these new props
             coolMode
-            initialChain={bsc} // Set your default chain
+            initialChain={bscTestnet} // Set your default chain
 
           // Remove the autoConnect prop to prevent automatic connection
         >

@@ -1,12 +1,18 @@
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
-// import axios from "axios";
+import { walletConnect } from '@wagmi/connectors'; // Updated import
+import { createConfig } from 'wagmi';
+// import { bsc } from 'wagmi/chains';
+import { bscTestnet } from 'wagmi/chains';
+
+
+
 
 //INTERNAL IMPORT
 import airdrop from "./airdrop.json";
 import iphone from "./iphone.json";
 
-export const airdrop_ADDRESS = "0xd5f278DAEECc7833bbd6531a52ea76Cc3f968037";
+export const airdrop_ADDRESS = "0x0DD3627cF04E01675Bba3D6Af743AE37113235C6";
 const airdrop_ABI = airdrop.abi;
 
 //IPHONE
@@ -129,53 +135,90 @@ const changeNetwork = async ({ networkName }) => {
 };
 
 export const handleNetworkSwitch = async () => {
-  const networkName = "bsc";
+  const networkName = "bscTestnet";
   await changeNetwork({ networkName });
 };
 
 export const web3Provider = async () => {
   try {
-    // For mobile wallets using WalletConnect
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isDappBrowser = window.ethereum && (window.ethereum.isTrust || 
+                         window.ethereum.isMetaMask);
+    
+    // For mobile web browsers (non-dApp browsers)
+    if (isMobile && !isDappBrowser) {
+      const projectId = 'c87b9758c721b75cf076ef3cc19ddd58';
+      
+      // Force WalletConnect for mobile web browsers
+      const wcProvider = await walletConnect({
+        projectId,
+        chains: [bscTestnet],
+        showQrModal: true,
+        qrModalOptions: { themeMode: "dark" },
+        metadata: {
+          name: 'Tinseltoken',
+          description: 'Tinseltoken Airdrop',
+          url: 'https://thetinseltoken.com',
+          icons: ['https://tntc.netlify.app/assets/img/logo/logo.png']
+        }
+      });
+
+      // Add event listeners for WalletConnect
+      wcProvider.on("disconnect", () => {
+        window.location.reload();
+      });
+
+      if (!wcProvider.provider) {
+        throw new Error("Please install a Web3 wallet or use WalletConnect");
+      }
+
+      return new ethers.providers.Web3Provider(wcProvider.provider);
+    }
+    
+    // For dApp browsers and desktop
     if (window.ethereum) {
-      return new ethers.providers.Web3Provider(window.ethereum);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      
+      // Add listeners for connection changes
+      window.ethereum.on('accountsChanged', () => {
+        window.location.reload();
+      });
+      
+      window.ethereum.on('chainChanged', () => {
+        window.location.reload();
+      });
+
+      return provider;
     }
     
-    // Fallback for other wallet connections
-    const provider = await detectEthereumProvider();
-    if (provider) {
-      return new ethers.providers.Web3Provider(provider);
-    }
-    
-    throw new Error("No web3 provider detected");
+    throw new Error("No Web3 provider found. Please install a wallet or use WalletConnect");
   } catch (error) {
     console.error("Web3Provider Error:", error);
     throw error;
   }
 };
 
+// Update AirdropContract to use the new web3Provider
 export const AirdropContract = async () => {
   try {
-    const web3modal = new Web3Modal();
-    const connection = await web3modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-
-    const contract = fetchContract(provider, airdrop_ABI, airdrop_ADDRESS);
-    return contract;
+    const provider = await web3Provider();
+    const signer = provider.getSigner();
+    return fetchContract(signer, airdrop_ABI, airdrop_ADDRESS);
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 
+// Update IphoneContract similarly
 export const IphoneContract = async () => {
   try {
-    const web3modal = new Web3Modal();
-    const connection = await web3modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-
-    const contract = fetchContract(provider, iphone_ABI, iphone_ADDRESS);
-    return contract;
+    const provider = await web3Provider();
+    const signer = provider.getSigner();
+    return fetchContract(signer, iphone_ABI, iphone_ADDRESS);
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 
@@ -204,7 +247,7 @@ export const addTNTCTokenToMetaMask = async () => {
       const wasAdded = await window.ethereum.request({
         method: "wallet_watchAsset",
         params: {
-          type: "ERC20",
+          type: "BEP20",
           options: {
             address: tokenAddress,
             symbol: tokenSymbol,
@@ -224,6 +267,6 @@ export const addTNTCTokenToMetaMask = async () => {
       return "Failed to add token";
     }
   } else {
-    return "MetaMask is not installed";
+    return "Wallet not found, please copy and link and use within the dapp browser";
   }
 };
